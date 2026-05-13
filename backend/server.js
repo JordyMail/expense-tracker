@@ -1,14 +1,14 @@
-// backend/server.js
 const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// In-memory data store
+// Data awal
 let transactions = [];
 
 // Routes
@@ -31,6 +31,8 @@ app.delete('/api/transactions/:id', (req, res) => {
   res.status(200).json({ message: 'Transaction deleted' });
 });
 
+// Jalankan server
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`✅ Backend running on http://localhost:${PORT}`);
+  console.log(`📊 API endpoint: http://localhost:${PORT}/api/transactions`);
 });
