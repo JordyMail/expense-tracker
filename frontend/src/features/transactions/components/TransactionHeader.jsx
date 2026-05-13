@@ -1,8 +1,8 @@
-// frontend/src/components/Header.jsx
+// frontend/src/features/transactions/components/TransactionHeader.jsx
 import React from 'react';
-import '../styles/components/Header.css';
+import '../../../styles/components/Header.css';
 
-const Header = () => {
+const TransactionHeader = () => {
   return (
     <header>
       <div className="logo">Expense Tracker</div>
@@ -19,4 +19,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default TransactionHeader;

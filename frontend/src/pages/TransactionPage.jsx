@@ -1,52 +1,81 @@
 // frontend/src/pages/TransactionPage.jsx
-import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import InputSection from '../components/InputSection';
-import Summary from '../components/Summary';
-import TransactionList from '../components/TransactionList';
+import React, { useEffect } from 'react';
+import { 
+  TransactionHeader, 
+  TransactionInput, 
+  TransactionSummary, 
+  TransactionList,
+  useTransactions,
+  useTransactionForm,
+  useTransactionFilter
+} from '../features/transactions';
+import { useKeyboardNavigation } from '../features/shared/hooks/useKeyboardNavigation';
+import { FORM_FIELDS } from '../features/shared/utils/constants';
 import '../styles/pages/TransactionPage.css';
 
 const TransactionPage = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { transactions, loading, addTransaction, deleteTransaction } = useTransactions();
+  const { 
+    formData, 
+    toggleType, 
+    handleDateChange, 
+    handleTodayPress, 
+    handleYesterdayPress, 
+    updateField, 
+    resetForm, 
+    prepareSubmitData 
+  } = useTransactionForm();
+  
+  const { filterType, setFilterType, searchTerm, setSearchTerm, groupedData, getGroupTotal } = 
+    useTransactionFilter(transactions);
+  
+  const { activeField, handleKeyDown, setActiveFieldManually } = useKeyboardNavigation(
+    FORM_FIELDS.length, 
+    (newField) => {
+      // Optional callback when field changes
+    }
+  );
 
+  // Global keyboard handlers for T and Y
   useEffect(() => {
-    // Fetch transactions from backend
-    fetch('http://localhost:5001/api/transactions')
-      .then(res => res.json())
-      .then(data => {
-        setTransactions(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching transactions:', err);
-        setLoading(false);
-      });
-  }, []);
+    const handleGlobalKeyDown = (e) => {
+      if (activeField === 0) {
+        if (e.key === 't' || e.key === 'T') {
+          e.preventDefault();
+          handleTodayPress();
+        } else if (e.key === 'y' || e.key === 'Y') {
+          e.preventDefault();
+          handleYesterdayPress();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [activeField, handleTodayPress, handleYesterdayPress]);
 
-  const addTransaction = (newTransaction) => {
-    fetch('http://localhost:5001/api/transactions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newTransaction),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTransactions([...transactions, data]);
-      })
-      .catch(err => console.error('Error adding transaction:', err));
+  const handleSubmit = () => {
+    const submitData = prepareSubmitData();
+    if (submitData) {
+      addTransaction(submitData);
+      resetForm();
+      setActiveFieldManually(0);
+    }
   };
 
-  const deleteTransaction = (id) => {
-    fetch(`http://localhost:5001/api/transactions/${id}`, {
-      method: 'DELETE',
-    })
-      .then(() => {
-        setTransactions(transactions.filter(t => t.id !== id));
-      })
-      .catch(err => console.error('Error deleting transaction:', err));
+const handleFormKeyDown = (e) => {
+  // Jangan submit jika dropdown sedang terbuka
+  const isDropdownOpen = document.querySelector('.dropdown-options-show');
+  if (e.key === 'Enter' && !isDropdownOpen) {
+    e.preventDefault();
+    handleSubmit();
+  }
+  handleKeyDown(e);
+};
+
+  const handleDateClick = () => {
+    // Trigger date picker
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) dateInput.showPicker();
   };
 
   if (loading) {
@@ -55,12 +84,27 @@ const TransactionPage = () => {
 
   return (
     <div>
-      <Header />
+      <TransactionHeader />
       <div className="container">
-        <InputSection onSubmit={addTransaction} />
-        <Summary transactions={transactions} />
-        <TransactionList 
-          transactions={transactions} 
+        <TransactionInput
+          formData={formData}
+          activeField={activeField}
+          onSubmit={handleSubmit}
+          onFieldFocus={setActiveFieldManually}
+          onFieldChange={updateField}
+          onDateClick={handleDateClick}
+          onToggleType={toggleType}
+          onKeyDown={handleFormKeyDown}
+        />
+        <TransactionSummary transactions={transactions} />
+        <TransactionList
+          transactions={transactions}
+          filterType={filterType}
+          setFilterType={setFilterType}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          groupedData={groupedData}
+          getGroupTotal={getGroupTotal}
           onDelete={deleteTransaction}
         />
       </div>
