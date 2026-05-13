@@ -25,7 +25,7 @@ node server.js
 
 cd frontend
 
-npm install
+npm install </br>
 npm install lucide-react
 
 npm start
