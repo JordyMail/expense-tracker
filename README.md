@@ -15,6 +15,7 @@ struktur ini akan memudahkann dalam:
 
 # struktur
 
+```bash
 expense-tracker/
 │
 ├── frontend/                                    # Frontend React application
@@ -88,7 +89,7 @@ expense-tracker/
 │
 └── README.md                                    # Root documentation
 
-
+```
 
 # Terminal 1 - backend
 
