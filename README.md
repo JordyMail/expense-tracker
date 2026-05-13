@@ -12,7 +12,7 @@ struktur ini akan memudahkann dalam:
 - halaman Account, Settings dan juga integrasi user belum dibuat
 
 
-# Terminal 1 - backend
+### Terminal 1 - backend
 
 cd backend
 
@@ -21,7 +21,7 @@ npm install express cors
 
 node server.js
 
-# Terminal 2 - frontend
+### Terminal 2 - frontend
 
 cd frontend
 
