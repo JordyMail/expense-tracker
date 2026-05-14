@@ -1,5 +1,4 @@
-Link testing:
-*deploy via 
+Link testing: https://expense-tracker-hangry.netlify.app/ </br>
 
 Dibuat dengan mempertimbangkan pengembangan aplikasi kedepannya!
 struktur ini akan memudahkann dalam:
